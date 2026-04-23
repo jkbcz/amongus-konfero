@@ -3,10 +3,23 @@ package amongus
 import "time"
 
 type PlayerState struct {
+	PlayerId         int
 	FinishedStations []int
 	TotalStations    int
 	CodeMask         string
-	IsVoting         bool
+	VotingState      *PlayerVotingState
+	IsDead           bool
+}
+
+type AdminState struct {
+	IsVoting bool
+	Settings GameSettings
+	Players  []byte
+}
+
+type PlayerVotingState struct {
+	PlayersDead []byte
+	MyVote      int
 }
 
 type StationState struct {
