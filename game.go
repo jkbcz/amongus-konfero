@@ -22,6 +22,9 @@ type Game struct {
 	TotalStations    int
 	CodeMask         string
 	CooldownDuration time.Duration `json:",format:sec"`
+
+	GameDuration time.Duration `json:",format:sec"`
+	GameStart    time.Time
 }
 
 type Player struct {
@@ -33,7 +36,7 @@ type Station struct {
 	CooldownUntil time.Time
 }
 
-func NewGame(requiredCodes int, codeMask string, totalStations int, cooldownDuration time.Duration) *Game {
+func NewGame(requiredCodes int, codeMask string, totalStations int, cooldownDuration time.Duration, gameDuration time.Duration) *Game {
 	g := &Game{
 		mu: &sync.Mutex{},
 
@@ -41,6 +44,9 @@ func NewGame(requiredCodes int, codeMask string, totalStations int, cooldownDura
 		CodeMask:         codeMask,
 		TotalStations:    totalStations,
 		CooldownDuration: cooldownDuration,
+
+		GameDuration: gameDuration,
+		GameStart:    time.Now(),
 
 		Players: map[string]Player{},
 	}

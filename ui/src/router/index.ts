@@ -1,6 +1,6 @@
 import Submit from '@/pages/Submit.vue'
 import Station from '@/pages/Station.vue'
-import Results from '@/pages/Results.vue'
+import View from '@/pages/View.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import Admin from '@/pages/Admin.vue'
 
@@ -17,7 +17,7 @@ const router = createRouter({
     },
     {
       path: "/view",
-      component: Results,
+      component: View,
     },
     {
       path: "/admin",

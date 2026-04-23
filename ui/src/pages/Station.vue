@@ -1,11 +1,15 @@
 <template>
     <div class="w-screen h-screen flex items-center justify-center" >
-        <div v-if="state"
+        <div v-if="state?.IsVoting" class="text-center">
+            <h1 class=" text-[128px]">Scheduled Meeting!</h1>
+            <RandomGif class="mx-auto w-150"/>
+        </div>
+        <div v-else-if="state"
             class="relative">
             <div :class="state.CooldownUntil >= currentTime.valueOf() ? 'blur-lg' : ''">
 
                 <h1 class="mb-16 text-[128px] text-center">STATION {{ stationId }}</h1>
-                <p class="text-[72px] text-center p-8 bg-gray-700 rounded">{{state.CurrentCode}}</p>
+                <p class="text-[72px] text-center p-8 bg-black border-white border-2 rounded">{{state.CurrentCode}}</p>
                 <!-- {{ state }} -->
             </div>
             <Countdown class="absolute top-0 left-1/2 -translate-x-1/2" :duration="state.CooldownDuration" :show-until="state.CooldownUntil"/>
@@ -25,10 +29,10 @@
 <script lang="ts" setup>
 import { useApi, type StationState } from '@/api';
 import Countdown from '@/components/Countdown.vue';
+import RandomGif from '@/components/RandomGif.vue';
 import { getPass, savePass } from '@/pass';
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
-
 const api = useApi()
 const state = ref<StationState>()
 const route = useRoute()

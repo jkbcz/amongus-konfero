@@ -11,12 +11,16 @@ type PlayerState struct {
 
 type StationState struct {
 	CurrentCode      string
-	CooldownUntil    time.Time `json:",format:unix"`
-	CooldownDuration int
+	CooldownUntil    time.Time     `json:",format:unix"`
+	CooldownDuration time.Duration `json:",format:sec"`
 	IsVoting         bool
 }
 
-type ResultState struct {
-	RemainingTasks int
-	IsVoting       bool
+type ViewState struct {
+	SolvedTasks int
+	TotalTasks  int
+
+	GameStart    time.Time     `json:",format:unix"`
+	GameDuration time.Duration `json:",format:sec"`
+	IsVoting     bool
 }

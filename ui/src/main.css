@@ -1,7 +1,21 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'In your face, Joffrey!';
+  src: url('./fonts/in_your_face.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'VCR OSD Mono';
+  src: url('./fonts/vcr_osd_mono.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
     /* background-color: #1d1d1d;
     color: white */
-    @apply bg-gray-900 text-white font-bold;
+    @apply bg-black text-white font-bold;
 }

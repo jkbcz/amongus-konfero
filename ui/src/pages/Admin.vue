@@ -30,10 +30,16 @@
                 <input type="submit" @click="updateSetting('code_mask', state.CodeMask)"/>
             </div>
 
-            <label>Cooldown Duration</label>
+            <label>Cooldown Duration (seconds)</label>
             <div class="flex gap-4 mb-4">
                 <input v-model="state.CooldownDuration" type="number" />
                 <input type="submit" @click="updateSetting('cooldown_duration', state.CooldownDuration+'s')"/>
+            </div>
+
+            <label>Game Duration (seconds)</label>
+            <div class="flex gap-4 mb-4">
+                <input v-model="state.GameDuration" type="number" />
+                <input type="submit" @click="updateSetting('game_duration', state.GameDuration+'s')"/>
             </div>
         </div>
         <div v-else class="rounded-md p-4 border-2 border-white">
@@ -52,10 +58,11 @@
 import { useApi, type AdminState } from '@/api';
 import { getPass, savePass } from '@/pass';
 import { ref } from 'vue';
+import { useToast } from 'vue-toast-notification';
 
 const api = useApi()
 const state = ref<AdminState>()
-
+const toast = useToast()
 const pass = ref(getPass())
 
 async function loadState() {
@@ -63,8 +70,13 @@ async function loadState() {
 }
 
 async function updateSetting(setting: string, value: any) {
-    await api.updateSetting(setting, value, pass.value)
-    await loadState()
+    try {
+        await api.updateSetting(setting, value, pass.value)
+        await loadState()
+        toast.success("updated settings")
+    } catch (err: any) {
+        toast.error(err.message)
+    }
 }
 
 async function login() {

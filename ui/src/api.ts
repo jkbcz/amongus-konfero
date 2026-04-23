@@ -15,7 +15,12 @@ export type StationState = {
 }
 
 export type ResultState = {
-    RemainingTasks: number
+    SolvedTasks: number
+    TotalTasks: number
+
+    GameStart: number
+    GameDuration: number
+    
     IsVoting: boolean
 }
 
@@ -26,6 +31,7 @@ export type AdminState = {
     TotalStations: number
     CodeMask: string
     CooldownDuration: number
+    GameDuration: number
 }
 
 export function useApi(): Api {
@@ -34,6 +40,7 @@ export function useApi(): Api {
 
 export class Api {
     playerId: string
+    baseUrl: string = import.meta.env.VITE_API_BASE_URL
 
     static provideKey = Symbol("api-provide-key")
 
@@ -48,13 +55,13 @@ export class Api {
     }
 
     async getPlayerState(): Promise<PlayerState> {
-        const result = await fetch(`http://localhost:8080/api/player_state?player_id=${this.playerId}`)
+        const result = await fetch(`${this.baseUrl}/api/player_state?player_id=${this.playerId}`)
         const state = await result.json()
         return state
     }
 
     async getStationState(stationId: number, pass: string): Promise<StationState> {
-        const result = await fetch(`http://localhost:8080/api/station_state?station_id=${stationId}`, {
+        const result = await fetch(`${this.baseUrl}/api/station_state?station_id=${stationId}`, {
             headers: {
                 'X-Pass': pass
             }
@@ -65,7 +72,7 @@ export class Api {
     }
 
     async getResultState(pass: string): Promise<ResultState> {
-        const result = await fetch(`http://localhost:8080/api/result_state`, {
+        const result = await fetch(`${this.baseUrl}/api/result_state`, {
             headers: {
                 'X-Pass': pass
             }
@@ -75,7 +82,7 @@ export class Api {
     }
 
     async getAdminState(pass: string): Promise<AdminState> {
-        const result = await fetch(`http://localhost:8080/api/admin_state`, {
+        const result = await fetch(`${this.baseUrl}/api/admin_state`, {
             headers: {
                 'X-Pass': pass
             }
@@ -85,7 +92,7 @@ export class Api {
     }
 
     async updateSetting(setting: string, value: any, pass: string) {
-        await fetch(`http://localhost:8080/api/settings?${setting}=${value}`, {
+        await fetch(`${this.baseUrl}/api/settings?${setting}=${value}`, {
             method: "POST",
             headers: {
                 'X-Pass': pass
@@ -94,7 +101,7 @@ export class Api {
     }
 
     async submitCode(code: string): Promise<boolean> {
-        const result = await fetch(`http://localhost:8080/api/submit?player_id=${this.playerId}&code=${code}`, {
+        const result = await fetch(`${this.baseUrl}/api/submit?player_id=${this.playerId}&code=${code}`, {
             method: "POST"
         })
         if(result.ok) {
