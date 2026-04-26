@@ -1,4 +1,4 @@
-import Submit from "@/pages/Submit.vue";
+import Player from "@/pages/Player.vue";
 import Station from "@/pages/Station.vue";
 import View from "@/pages/View.vue";
 import { createRouter, createWebHistory } from "vue-router";
@@ -10,7 +10,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      component: Submit,
+      component: Player,
     },
     {
       path: "/station",

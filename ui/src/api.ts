@@ -6,7 +6,10 @@ export type PlayerState = {
   FinishedStations: number[];
   CodeMask: string;
   TotalStations: number;
-  IsVoting: boolean;
+  VotingState?: {
+    Players: boolean[];
+    MyVote: number;
+  };
   IsDead: boolean;
 };
 
@@ -20,6 +23,9 @@ export type StationState = {
 export type ResultState = {
   SolvedTasks: number;
   TotalTasks: number;
+
+  AlivePlayers: number;
+  TotalPlayers: number;
 
   GameStart: number;
   GameDuration: number;
@@ -38,7 +44,7 @@ export type AdminState = {
     CooldownDuration: number;
     GameDuration: number;
   };
-  Players: string;
+  Players: boolean[];
 };
 
 export function useApi(): Api {
@@ -57,6 +63,9 @@ export class Api {
       },
     });
     const state = await result.json();
+    if(state.VotingState) {
+        state.VotingState.Players = decodeDeathList(state.VotingState.Players, state.VotingState.TotalPlayers)
+    }
     return state;
   }
 
@@ -93,7 +102,8 @@ export class Api {
         "X-Pass": getAdminPass(),
       },
     });
-    const state: AdminState = await result.json();
+    const state = await result.json();
+    state.Players = decodeDeathList(state.Players, state.Settings.TotalPlayers)
     return state;
   }
   async togglePlayer(playerId: number): Promise<void> {
@@ -130,4 +140,15 @@ export class Api {
   install(app: App) {
     app.provide(Api.provideKey, this);
   }
+}
+
+
+function decodeDeathList(rawPlayers: string, totalPlayers: number) {
+    const result: boolean[] = []
+    var bytes = Uint8Array.fromBase64(rawPlayers)
+
+    for (let i = 0; i <= totalPlayers; i++) {
+        result.push((bytes[Math.floor(i / 8)] & 1 << i % 8) > 0)
+    }
+    return result
 }

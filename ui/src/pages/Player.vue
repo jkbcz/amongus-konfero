@@ -1,19 +1,35 @@
 <template>
-    <div class="p-8 max-w-sm mx-auto">
-        <div v-if="state?.IsVoting" class="text-center flex justify-center items-center h-screen">
-            <div>
-                <h1 class="text-5xl mb-16">Scheduled Meeting!</h1>
-                <RandomGif class="mx-auto w-full" />
-            </div>
+    <div v-if="state" class="px-8 max-w-sm mx-auto">
+        <h1 class="text-5xl mt-8 font-['In_your_face,_Joffrey!']">AMONG US: Konfero Edition</h1>
+        <div class="text-sm mb-8 flex justify-between items-center text-gray-400">
+            <p>Player ID: {{ state.PlayerId.toString().padStart(4, "0") }}</p>
+            <button @click="goToLogin" class="cursor-pointer underline p-0"> logout</button>
         </div>
-        <div v-if="state?.IsDead" class="text-center flex justify-center items-center h-screen">
+
+        <div v-if="state.IsDead" class="text-center">
             <div>
                 <h1 class="text-5xl mb-16">You Are Dead!</h1>
                 <RandomGif class="mx-auto w-full" />
             </div>
         </div>
-        <div v-else-if="state">
-            <h1 class="text-5xl mb-8 font-['In_your_face,_Joffrey!']">AMONG US: Konfero Edition</h1>
+        <div v-else-if="state.VotingState">
+            <div>
+                <h1 class="text-5xl mb-8">Killing Time!</h1>
+                <p class="mb-4">Choose who to eject:</p>
+                <div class="grid grid-cols-4 lg:grid-cols-8 flex-wrap gap-2">
+                    <template v-for="(isDead, i) in state.VotingState.Players">
+                        <div 
+                            v-if="i > 0" 
+                            class="cursor-pointer text-center border-2" 
+                            :class="isDead ? 'opacity-50' : playerClass(i)"
+                            @click="playerToEject = i">
+                            {{ i.toString().padStart(4, "0") }}
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div v-else>
 
             <form @submit.prevent="sendCode">
                 <label for="code">Code</label>
@@ -30,18 +46,13 @@
                     {{ i }}
                 </div>
             </div>
-
-            <div class=" mt-12 flex justify-between items-center text-gray-400">
-                <p class="text-lg">Logged in as: {{ state.PlayerId.toString().padStart(4, "0") }}</p>
-                <input @click="goToLogin" class="p-1 text-sm" type="submit" value="logout" />
-            </div>
         </div>
     </div>
-
 </template>
 
 <script lang="ts" setup>
 import { useApi, type PlayerState } from '@/api';
+import PlayerList from '@/components/PlayerList.vue';
 import RandomGif from '@/components/RandomGif.vue';
 import { onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -53,6 +64,8 @@ const router = useRouter()
 const state = ref<PlayerState>()
 loadState()
 const intervalId = setInterval(loadState, 1000)
+
+const playerToEject = ref(0)
 
 onUnmounted(() => {
     clearInterval(intervalId)
@@ -74,6 +87,17 @@ function upper() {
     code.value = code.value.toUpperCase()
 }
 
+function playerClass(i: number) {
+    if(i == state.value?.PlayerId) {
+        return 'text-yellow-400'
+    } else if (i == playerToEject.value) {
+        return 'text-green-400'
+    }
+    return ''
+}
+
+
+const code = ref("")
 async function sendCode() {
     try {
         await api.submitCode(code.value)
@@ -84,7 +108,6 @@ async function sendCode() {
         toast.error(err.message)
     }
 }
-const code = ref("")
 </script>
 
 <style scoped>

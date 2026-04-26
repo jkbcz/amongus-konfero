@@ -18,8 +18,9 @@ type AdminState struct {
 }
 
 type PlayerVotingState struct {
-	PlayersDead []byte
-	MyVote      int
+	Players      []byte
+	TotalPlayers int
+	MyVote       int
 }
 
 type StationState struct {
@@ -32,6 +33,9 @@ type StationState struct {
 type ViewState struct {
 	SolvedTasks int
 	TotalTasks  int
+
+	AlivePlayers int
+	TotalPlayers int
 
 	GameStart    time.Time     `json:",format:unix"`
 	GameDuration time.Duration `json:",format:sec"`

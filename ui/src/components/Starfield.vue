@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute w-full h-screen overflow-hidden">
+  <div >
     
     <div class="star-layer layer-1" :style="{ '--star-shadow': smallStars }"></div>
     <div class="star-layer layer-2" :style="{ '--star-shadow': mediumStars }"></div>

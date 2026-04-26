@@ -1,8 +1,9 @@
 <template>
     <div class="w-screen h-screen flex items-center justify-center ">
-        <div v-if="state" class="font-['In_your_face,_Joffrey!'] text-center text-[200px]">
+        <div v-if="state" class="font-['In_your_face,_Joffrey!'] text-center text-[160px]">
             <h1 class="text-5xl mb-8">AMONG US: Konfero Edition</h1>
             <p>Tasks: {{ state.SolvedTasks }}/{{ state.TotalTasks }}</p>
+            <p>Players: {{ state.AlivePlayers }}/{{ state.TotalPlayers }}</p>
             <p v-if="timeLeft > 0">Time: {{ minutesLeft }}:{{ secondsLeft }}</p>
         </div>
     </div>

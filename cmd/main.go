@@ -70,8 +70,9 @@ func main() {
 		}
 		if g.Voting != nil {
 			result.VotingState = &amongus.PlayerVotingState{
-				MyVote:      g.Voting.Votes[playerId],
-				PlayersDead: g.GetPlayerDeathBitField(),
+				Players:      g.GetPlayerDeathBitField(),
+				TotalPlayers: g.Settings.TotalPlayers,
+				MyVote:       g.Voting.Votes[playerId],
 			}
 		}
 		json.MarshalWrite(w, result)
@@ -94,9 +95,20 @@ func main() {
 	}))
 
 	mux.HandleFunc("GET /api/result_state", AdminAuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		alivePlayers := 0
+		for _, p := range g.Players {
+			if !p.IsDead {
+				alivePlayers += 1
+			}
+		}
+
 		result := amongus.ViewState{
-			SolvedTasks:  g.SolvedCodes,
-			TotalTasks:   g.Settings.RequiredCodes,
+			SolvedTasks: g.SolvedCodes,
+			TotalTasks:  g.Settings.RequiredCodes,
+
+			TotalPlayers: g.Settings.TotalPlayers,
+			AlivePlayers: alivePlayers,
+
 			GameStart:    g.GameStart,
 			GameDuration: g.Settings.GameDuration,
 			IsVoting:     g.Voting != nil,
