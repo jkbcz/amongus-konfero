@@ -3,9 +3,22 @@
         <h1 class="text-5xl mb-8">Admin</h1>
         <!-- {{ state }} -->
         <div class="flex justify-between">
-            <button @click="updateSetting('is_voting', !state.IsVoting)" class="bg-green-500 mb-4">
-                {{ state.IsVoting ? 'Stop Voting' : 'Start Voting' }}
-            </button>
+            <div class="flex gap-4">
+                <button v-if="!state.Voting" @click="updateSetting('is_voting', true)" class="bg-green-500 mb-4">
+                    Start Meeting
+                </button>
+                <button v-if="state.Voting && !state.Voting.Active" @click="updateSetting('voting_active', true)"
+                    class="bg-green-500 mb-4">
+                    Start Voting
+                </button>
+                <button v-if="state.Voting && state.Voting.Active" @click="updateSetting('voting_active', false)"
+                    class="bg-green-500 mb-4">
+                    Finish Voting
+                </button>
+                <button v-if="state.Voting" @click="updateSetting('is_voting', false)" class="bg-red-500 mb-4">
+                    End Meeting
+                </button>
+            </div>
             <button @click="updateSetting('reset', true)" class="bg-red-500 mb-4">
                 Reset game
             </button>
@@ -38,8 +51,7 @@
         <label>Cooldown Duration (seconds)</label>
         <div class="flex gap-4 mb-4">
             <input v-model="state.Settings.CooldownDuration" type="number" />
-            <input type="submit"
-                @click="updateSetting('cooldown_duration', state.Settings.CooldownDuration + 's')" />
+            <input type="submit" @click="updateSetting('cooldown_duration', state.Settings.CooldownDuration + 's')" />
         </div>
 
         <label>Game Duration (seconds)</label>
@@ -52,8 +64,8 @@
 
         <div class="grid grid-cols-4 lg:grid-cols-8 flex-wrap gap-2">
             <template v-for="(isDead, i) in state.Players">
-                <div v-if="i > 0" class="cursor-pointer text-center border-2 border-white" :class="isDead ? 'opacity-50' : ''"
-                    @click="togglePlayer(i)">
+                <div v-if="i > 0" class="cursor-pointer text-center border-2 border-white"
+                    :class="isDead ? 'opacity-50' : ''" @click="togglePlayer(i)">
                     {{ i.toString().padStart(4, "0") }}
                 </div>
             </template>

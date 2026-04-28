@@ -12,7 +12,7 @@ type PlayerState struct {
 }
 
 type AdminState struct {
-	IsVoting bool
+	Voting   *VotingState
 	Settings GameSettings
 	Players  []byte
 }
@@ -21,6 +21,7 @@ type PlayerVotingState struct {
 	Players      []byte
 	TotalPlayers int
 	MyVote       int
+	Active       bool
 }
 
 type StationState struct {
@@ -39,5 +40,6 @@ type ViewState struct {
 
 	GameStart    time.Time     `json:",format:unix"`
 	GameDuration time.Duration `json:",format:sec"`
-	IsVoting     bool
+
+	Voting *VotingState
 }

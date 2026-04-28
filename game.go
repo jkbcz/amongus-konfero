@@ -32,7 +32,8 @@ type GameSettings struct {
 }
 
 type VotingState struct {
-	Votes []int
+	Votes  []int
+	Active bool
 }
 
 type Player struct {
@@ -114,7 +115,7 @@ func (g *Game) Vote(playerId int, targetPlayerId int) error {
 	return nil
 }
 
-func (g *Game) StartVoting() error {
+func (g *Game) StartMeeting() error {
 	g.mu.Lock()
 	defer g.mu.Unlock()
 
@@ -126,7 +127,7 @@ func (g *Game) StartVoting() error {
 	return nil
 }
 
-func (g *Game) EndVoting() error {
+func (g *Game) EndMeeting() error {
 	g.mu.Lock()
 	defer g.mu.Unlock()
 

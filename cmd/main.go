@@ -73,6 +73,7 @@ func main() {
 				Players:      g.GetPlayerDeathBitField(),
 				TotalPlayers: g.Settings.TotalPlayers,
 				MyVote:       g.Voting.Votes[playerId],
+				Active:       g.Voting.Active,
 			}
 		}
 		json.MarshalWrite(w, result)
@@ -111,14 +112,14 @@ func main() {
 
 			GameStart:    g.GameStart,
 			GameDuration: g.Settings.GameDuration,
-			IsVoting:     g.Voting != nil,
+			Voting:       g.Voting,
 		}
 		json.MarshalWrite(w, result)
 	}))
 
 	mux.HandleFunc("GET /api/admin_state", AdminAuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		json.MarshalWrite(w, amongus.AdminState{
-			IsVoting: g.Voting != nil,
+			Voting:   g.Voting,
 			Settings: g.Settings,
 			Players:  g.GetPlayerDeathBitField(),
 		})
@@ -138,10 +139,15 @@ func main() {
 		isVoting := r.FormValue("is_voting")
 		if isVoting != "" {
 			if isVoting == "true" {
-				g.StartVoting()
+				g.StartMeeting()
 			} else {
-				g.EndVoting()
+				g.EndMeeting()
 			}
+		}
+
+		votingActive := r.FormValue("voting_active")
+		if votingActive != "" && g.Voting != nil {
+			g.Voting.Active = votingActive == "true"
 		}
 
 		requiredCodes, err := strconv.Atoi(r.FormValue("required_codes"))

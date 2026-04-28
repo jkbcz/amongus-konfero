@@ -9,6 +9,7 @@ export type PlayerState = {
   VotingState?: {
     Players: boolean[];
     MyVote: number;
+    Active: boolean;
   };
   IsDead: boolean;
 };
@@ -30,12 +31,12 @@ export type ResultState = {
   GameStart: number;
   GameDuration: number;
 
-  IsVoting: boolean;
+  Voting?: Voting;
 };
 
 export type AdminState = {
   SolvedCodes: number;
-  IsVoting: boolean;
+  Voting: Voting;
   Settings: {
     RequiredCodes: number;
     TotalStations: number;
@@ -45,6 +46,11 @@ export type AdminState = {
     GameDuration: number;
   };
   Players: boolean[];
+};
+
+export type Voting = {
+  Votes: number[];
+  Active: boolean;
 };
 
 export function useApi(): Api {
@@ -63,16 +69,16 @@ export class Api {
       },
     });
     const state = await result.json();
-    if(state.VotingState) {
-        state.VotingState.Players = decodeDeathList(state.VotingState.Players, state.VotingState.TotalPlayers)
+    if (state.VotingState) {
+      state.VotingState.Players = decodeDeathList(
+        state.VotingState.Players,
+        state.VotingState.TotalPlayers,
+      );
     }
     return state;
   }
 
-  async getStationState(
-    stationId: number,
-    pass: string,
-  ): Promise<StationState> {
+  async getStationState(stationId: number): Promise<StationState> {
     const result = await fetch(
       `${this.baseUrl}/api/station_state?station_id=${stationId}`,
       {
@@ -103,7 +109,7 @@ export class Api {
       },
     });
     const state = await result.json();
-    state.Players = decodeDeathList(state.Players, state.Settings.TotalPlayers)
+    state.Players = decodeDeathList(state.Players, state.Settings.TotalPlayers);
     return state;
   }
   async togglePlayer(playerId: number): Promise<void> {
@@ -125,7 +131,7 @@ export class Api {
   }
 
   async submitCode(code: string): Promise<boolean> {
-    const result = await fetch(`${this.baseUrl}/api/submit&code=${code}`, {
+    const result = await fetch(`${this.baseUrl}/api/submit?code=${code}`, {
       method: "POST",
       headers: {
         "X-Pass": getUserPass(),
@@ -137,18 +143,33 @@ export class Api {
     throw Error(await result.text());
   }
 
+  async sendVote(targetPlayerId: number): Promise<boolean> {
+    const result = await fetch(
+      `${this.baseUrl}/api/vote?target_player_id=${targetPlayerId}`,
+      {
+        method: "POST",
+        headers: {
+          "X-Pass": getUserPass(),
+        },
+      },
+    );
+    if (result.ok) {
+      return true;
+    }
+    throw Error(await result.text());
+  }
+
   install(app: App) {
     app.provide(Api.provideKey, this);
   }
 }
 
-
 function decodeDeathList(rawPlayers: string, totalPlayers: number) {
-    const result: boolean[] = []
-    var bytes = Uint8Array.fromBase64(rawPlayers)
+  const result: boolean[] = [];
+  var bytes = Uint8Array.fromBase64(rawPlayers);
 
-    for (let i = 0; i <= totalPlayers; i++) {
-        result.push((bytes[Math.floor(i / 8)] & 1 << i % 8) > 0)
-    }
-    return result
+  for (let i = 0; i <= totalPlayers; i++) {
+    result.push((bytes[Math.floor(i / 8)] & (1 << (i % 8))) > 0);
+  }
+  return result;
 }

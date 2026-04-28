@@ -4,12 +4,10 @@ import Starfield from './components/Starfield.vue';
 </script>
 
 <template>
-  <div>
-    <starfield class=" fixed top-0 w-screen -z-10"/>
+  <starfield class=" fixed top-0 w-screen -z-10" />
 
-    <router-view/>
-    <!-- </div> -->
-  </div>
+  <router-view />
+  <!-- </div> -->
 </template>
 
 <style scoped></style>
